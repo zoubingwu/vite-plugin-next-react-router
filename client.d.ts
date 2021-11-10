@@ -1,4 +1,4 @@
-declare module 'virtual:react-router' {
+declare module 'virtual:next-react-router' {
   import React from 'react';
 
   export interface Route {

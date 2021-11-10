@@ -1,4 +1,4 @@
-export const MODULE_ID_VIRTUAL = 'virtual:react-router';
+export const MODULE_ID_VIRTUAL = 'virtual:next-react-router';
 
 export const MATCH_ALL_ROUTE = '*';
 
