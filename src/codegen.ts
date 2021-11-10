@@ -29,29 +29,30 @@ import { BrowserRouter, Route, Switch } from 'react-router-dom';
 export const routes = [${await generateRoutesCodeFromResolvedRoutes(routes)}];
 
 export const GlobalLayout = ${
-    globalLayoutFile ? `lazy(() => import('${globalLayoutFile}'))` : null
+    globalLayoutFile
+      ? `lazy(() => import('${globalLayoutFile}'))`
+      : `() => <React.Fragment />`
   }
 
 export function RouteView({ fallback }) {
   return (
     <BrowserRouter>
       <Suspense fallback={fallback || null}>
-        <Switch>
-          {routes.map((route, i) => {
-            const PageComp = lazy(route.component);
-            let FinalPage = PageComp;
-
-            if (GlobalLayout) {
-              FinalPage = () => <GlobalLayout Component={PageComp} />;
-            }
-
-            return (
-              <Route path={route.path} key={i} exact={route.exact}>
-                <FinalPage />
-              </Route>
-            );
-          })}
-        </Switch>
+        <GlobalLayout Component={
+          () => <Switch>
+            {routes.map((route, i) => {
+              return (
+                <Route
+                  path={route.path}
+                  key={i}
+                  exact={route.exact}
+                  component={lazy(route.component)}
+                />
+              );
+            })}
+          </Switch>
+        }>
+        </GlobalLayout>
       </Suspense>
     </BrowserRouter>
   );
