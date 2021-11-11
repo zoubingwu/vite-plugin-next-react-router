@@ -2,7 +2,7 @@ import type { Plugin } from 'vite';
 
 import { MODULE_ID_VIRTUAL } from './const';
 import { Route, UserOptions, ResolvedOptions, ResolvedRoute } from './types';
-import { debug } from './utils';
+import { debug, normalizeBundleChunkName } from './utils';
 import {
   resolvePages,
   resolveOptions,
@@ -52,6 +52,9 @@ export function reactRouterPlugin(userOptions?: UserOptions): Plugin {
       const code = await generate(routes, globalLayout);
 
       return code;
+    },
+    generateBundle(_, bundle) {
+      normalizeBundleChunkName(bundle);
     },
   };
 }

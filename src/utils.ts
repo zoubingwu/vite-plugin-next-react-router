@@ -1,5 +1,6 @@
 import path from 'path';
 import Debug from 'debug';
+import type { OutputBundle } from 'rollup';
 
 import { MATCH_ALL_ROUTE } from './const';
 
@@ -74,4 +75,16 @@ function sorter(a: string, b: string) {
 
 export function sortRoutes(routes: string[]) {
   return routes.sort(sorter);
+}
+
+export function normalizeBundleChunkName(bundle: OutputBundle) {
+  console.log('bundle: ', bundle);
+  const files = Object.keys(bundle).map(i => path.basename(i));
+  for (const chunk of Object.values(bundle)) {
+    chunk.fileName = chunk.fileName.replace(/(\[|\])/g, '_');
+    if (chunk.type === 'chunk') {
+      for (const file of files)
+        chunk.code = chunk.code.replace(file, file.replace(/(\[|\])/g, '_'));
+    }
+  }
 }
