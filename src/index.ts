@@ -1,5 +1,4 @@
 import type { Plugin } from 'vite';
-import { transformWithEsbuild } from 'vite';
 
 import { MODULE_ID_VIRTUAL } from './const';
 import { Route, UserOptions, ResolvedOptions, ResolvedRoute } from './types';
@@ -11,6 +10,7 @@ import {
   resolveGlobalLayout,
 } from './resolver';
 import { generate } from './codegen';
+import { handleHMR } from './hmr';
 
 export { Route };
 
@@ -28,6 +28,11 @@ export function reactRouterPlugin(userOptions?: UserOptions): Plugin {
       debug.options(options);
       pages = resolvePages(options);
     },
+    configureServer(server) {
+      handleHMR(server, pages, options, () => {
+        routes = null;
+      });
+    },
     resolveId(id) {
       if (id === MODULE_ID_VIRTUAL) {
         return id;
@@ -44,19 +49,7 @@ export function reactRouterPlugin(userOptions?: UserOptions): Plugin {
         globalLayout = resolveGlobalLayout(options);
       }
 
-      const code = generate(routes, globalLayout);
-
-      return code;
-    },
-    async transform(code, id) {
-      if (id === MODULE_ID_VIRTUAL) {
-        const result = await transformWithEsbuild(code, id, {
-          loader: 'jsx',
-          jsx: 'transform',
-        });
-
-        return { code: result.code, map: undefined };
-      }
+      const code = await generate(routes, globalLayout);
 
       return code;
     },
