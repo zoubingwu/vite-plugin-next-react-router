@@ -78,7 +78,6 @@ export function sortRoutes(routes: string[]) {
 }
 
 export function normalizeBundleChunkName(bundle: OutputBundle) {
-  console.log('bundle: ', bundle);
   const files = Object.keys(bundle).map(i => path.basename(i));
   for (const chunk of Object.values(bundle)) {
     chunk.fileName = chunk.fileName.replace(/(\[|\])/g, '_');
