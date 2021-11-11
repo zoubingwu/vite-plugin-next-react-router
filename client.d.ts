@@ -10,8 +10,6 @@ declare module 'virtual:next-react-router' {
   export const routes: Route[];
 
   export const GlobalLayout: React.ComponentType<{
-    Component: React.ComponentType<{}>;
+    children: React.ReactNode | undefined;
   }>;
-
-  export const RouteView: React.FC<{ fallback?: React.ReactNode | null }>;
 }

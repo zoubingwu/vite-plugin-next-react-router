@@ -23,38 +23,13 @@ export async function generate(
   globalLayoutFile?: string | null
 ): Promise<string> {
   return `
-import React, { Suspense, lazy } from 'react';
-import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import React from 'react';
 
 export const routes = [${await generateRoutesCodeFromResolvedRoutes(routes)}];
 
 export const GlobalLayout = ${
     globalLayoutFile
-      ? `lazy(() => import('${globalLayoutFile}'))`
+      ? `React.lazy(() => import('${globalLayoutFile}'))`
       : `() => <React.Fragment />`
-  }
-
-export function RouteView({ fallback }) {
-  return (
-    <BrowserRouter>
-      <Suspense fallback={fallback || null}>
-        <GlobalLayout Component={
-          () => <Switch>
-            {routes.map((route, i) => {
-              return (
-                <Route
-                  path={route.path}
-                  key={i}
-                  exact={route.exact}
-                  component={lazy(route.component)}
-                />
-              );
-            })}
-          </Switch>
-        }>
-        </GlobalLayout>
-      </Suspense>
-    </BrowserRouter>
-  );
-}`;
+  }`;
 }
