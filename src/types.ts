@@ -23,12 +23,6 @@ export interface Options {
    * @default ['js', 'jsx', 'ts', 'tsx']
    */
   extensions: string[];
-
-  /**
-   * Base path for route, e.g. `dashboard` -> '/dashboard', default is ''
-   * @default ''
-   */
-  baseRoute: string;
 }
 
 export type UserOptions = Partial<Options>;
