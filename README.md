@@ -1,6 +1,6 @@
 # vite-plugin-next-react-router
 
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/zoubingwu/vite-plugin-next-react-router/test)
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/zoubingwu/vite-plugin-next-react-router/Test)
 ![npm](https://img.shields.io/npm/v/vite-plugin-next-react-router)
 
 A Next.js style file system based routing plugin for vite, inspired by [vite-plugin-pages](https://github.com/hannoeru/vite-plugin-pages). **Requires react-router v6.**
