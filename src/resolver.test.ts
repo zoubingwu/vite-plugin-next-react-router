@@ -13,7 +13,6 @@ beforeEach(() => {
 test('resolver:resolveOptions', () => {
   expect(options).toEqual({
     async: true,
-    baseRoute: '',
     extensions: ['tsx', 'ts', 'jsx', 'js'],
     pageDir,
     root: process.cwd(),

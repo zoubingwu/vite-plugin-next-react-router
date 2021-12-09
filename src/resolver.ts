@@ -26,7 +26,6 @@ export function resolveOptions(
     async: userOptions?.async ?? true,
     pageDir: userOptions?.pageDir ?? DEFAULT_PAGE_DIR,
     extensions: userOptions?.extensions ?? DEFAULT_EXT,
-    baseRoute: userOptions?.baseRoute ?? '',
   };
 }
 

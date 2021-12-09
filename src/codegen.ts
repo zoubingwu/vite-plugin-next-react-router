@@ -1,5 +1,4 @@
 import fs from 'fs';
-import { snakeCase } from 'lodash';
 
 import { resolveGlobalLayout } from './resolver';
 import { ResolvedOptions, ResolvedRoute } from './types';
