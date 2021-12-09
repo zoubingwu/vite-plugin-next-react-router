@@ -1,14 +1,7 @@
-import {
-  Switch,
-  Route,
-  Link,
-  useParams,
-  useRouteMatch,
-} from 'react-router-dom';
+import { Route, Link, useParams } from 'react-router-dom';
 import React from 'react';
-import { renderRoutes, RouteConfigComponentProps } from 'react-router-config';
 
-const component: React.FC<RouteConfigComponentProps> = ({ route }) => {
+const component: React.FC = () => {
   return (
     <div>
       <ul>
@@ -23,6 +16,9 @@ const component: React.FC<RouteConfigComponentProps> = ({ route }) => {
         </li>
         <li>
           <Link to="/4/user">user</Link>
+        </li>
+        <li>
+          <Link to="/login">login</Link>
         </li>
         <li>
           <Link to="/404">404</Link>
