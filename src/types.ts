@@ -1,16 +1,8 @@
-import React from 'react';
-
-export interface Route {
-  path: string;
-  exact?: boolean;
-  component: React.ComponentType<any> | Parameters<typeof React.lazy>[0];
-}
-
 export interface ResolvedRoute {
   path: string;
-  exact?: boolean;
-  componentPath: string;
-  layoutPath?: string;
+  componentPath: string; // absolute path to component
+  componentName: string;
+  index?: boolean;
 }
 
 export interface Options {
@@ -47,3 +39,8 @@ export interface ResolvedOptions extends Options {
    */
   root: string;
 }
+
+type PageRoute = string;
+type FilePath = string;
+
+export type ResolvedPages = Map<PageRoute, FilePath>;

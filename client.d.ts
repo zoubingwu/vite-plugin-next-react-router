@@ -1,15 +1,7 @@
 declare module 'virtual:next-react-router' {
-  import React from 'react';
+  import { RouteObject } from 'react-router-dom';
 
-  export interface Route {
-    path: string;
-    exact?: boolean;
-    component: Parameters<typeof React.lazy>[0];
-  }
+  export const routes: RouteObject[];
 
-  export const routes: Route[];
-
-  export const GlobalLayout: React.ComponentType<{
-    children: React.ReactNode | undefined;
-  }>;
+  export const pages: Array<{ route: string; meta?: Record<string, any> }>;
 }

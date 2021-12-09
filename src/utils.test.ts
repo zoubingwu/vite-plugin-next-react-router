@@ -1,4 +1,5 @@
 import {
+  getComponentName,
   isCatchAll,
   isDynamic,
   normalizeDirPathToRoute,
@@ -44,4 +45,11 @@ test('utils:normalizePathToRoute', () => {
     '/topic/component'
   );
   expect(normalizePathToRoute('/[id]/user.tsx')).toBe('/:id/user');
+});
+
+test('utils:getComponentName', () => {
+  expect(getComponentName('settings/articles/index.tsx')).toBe(
+    'SettingsArticlesIndex'
+  );
+  expect(getComponentName('articles/[id].tsx')).toBe('ArticlesId');
 });

@@ -1,15 +1,15 @@
 import path from 'path';
-import Debug from 'debug';
-import type { OutputBundle } from 'rollup';
+import consola from 'consola';
+import { upperFirst, camelCase } from 'lodash';
+
+import { name } from '../package.json';
 
 import { MATCH_ALL_ROUTE } from './const';
 
-export const debug = {
-  hmr: Debug('vite-plugin-react-router:hmr'),
-  gen: Debug('vite-plugin-react-router:gen'),
-  options: Debug('vite-plugin-react-router:options'),
-  cache: Debug('vite-plugin-react-router:cache'),
-  pages: Debug('vite-plugin-react-router:pages'),
+export const debug = (message: any, ...args: any[]) => {
+  if (process.env.DEBUG === name) {
+    consola.info(message, ...args);
+  }
 };
 
 export function isCatchAll(filename: string) {
@@ -74,5 +74,23 @@ function sorter(a: string, b: string) {
 }
 
 export function sortRoutes(routes: string[]) {
-  return routes.sort(sorter);
+  return [...routes].sort(sorter);
+}
+
+export function getComponentName(filePath: string) {
+  const segments = filePath.split(path.sep);
+  const extname = path.extname(filePath);
+  const fileName = path.basename(filePath, extname);
+
+  segments[segments.length - 1] = fileName;
+
+  const name = segments.reduce((acc, segment) => {
+    if (isDynamic(segment)) {
+      return acc + upperFirst(camelCase(segment.replace(/^\[(.+)\]$/, '$1')));
+    }
+
+    return acc + upperFirst(camelCase(segment));
+  }, '');
+
+  return name;
 }

@@ -1,37 +1,23 @@
 import type { Plugin } from 'vite';
 
 import { MODULE_ID_VIRTUAL } from './const';
-import { Route, UserOptions, ResolvedOptions, ResolvedRoute } from './types';
-import { debug } from './utils';
-import {
-  resolvePages,
-  resolveOptions,
-  resolveRoutes,
-  resolveGlobalLayout,
-} from './resolver';
-import { generate } from './codegen';
-import { handleHMR } from './hmr';
+import { UserOptions } from './types';
 
-export { Route };
+import { Context } from './context';
 
 export function reactRouterPlugin(userOptions?: UserOptions): Plugin {
-  let routes: ResolvedRoute[] | null = null;
-  let options: ResolvedOptions;
-  let pages: Map<string, string>;
-  let globalLayout: string | null = null;
+  const ctx: Context = new Context(userOptions);
 
   return {
     name: 'vite-plugin-next-router',
     enforce: 'pre',
     async configResolved({ root }) {
-      options = resolveOptions(userOptions, root);
-      debug.options(options);
-      pages = resolvePages(options);
+      ctx.root = root;
+      ctx.resolveOptions();
+      ctx.search();
     },
     configureServer(server) {
-      handleHMR(server, pages, options, () => {
-        routes = null;
-      });
+      ctx.configureServer(server);
     },
     resolveId(id) {
       if (id === MODULE_ID_VIRTUAL) {
@@ -43,15 +29,7 @@ export function reactRouterPlugin(userOptions?: UserOptions): Plugin {
         return;
       }
 
-      if (!routes) {
-        routes = [];
-        routes = resolveRoutes(pages, options);
-        globalLayout = resolveGlobalLayout(options);
-      }
-
-      const code = await generate(routes, globalLayout);
-
-      return code;
+      return await ctx.generateVirtualModuleCode();
     },
   };
 }
