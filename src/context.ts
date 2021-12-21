@@ -72,7 +72,11 @@ export class Context {
     }
     const routes = resolveRoutes(this._pages, this._resolvedOptions!);
     debug('routes: ', routes);
-    const { code } = await transformWithEsbuild(
+
+    const code = generate(routes, this._resolvedOptions!);
+    debug('virtual module code: ', code);
+
+    const { code: virtualModuleCode } = await transformWithEsbuild(
       generate(routes, this._resolvedOptions!),
       'routes.jsx',
       {
@@ -81,7 +85,6 @@ export class Context {
       }
     );
 
-    debug('virtual module code: ', code);
-    return code;
+    return virtualModuleCode;
   }
 }
