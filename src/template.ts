@@ -36,7 +36,7 @@ export const usePageRoutes = () => {
       element: ${layoutElement},
       children: [${routes}]
     }
-  ])
+  ], [])
 }
 
 export const usePages = () => {
@@ -81,12 +81,12 @@ export const usePageRoutes = () => {
         ${routes}
       ]
     }
-  ])
+  ], [])
 }
 
 export const usePages = () => {
   return React.useMemo(() => [
     ${pages}
-  ])
+  ], [])
 }
 `;
