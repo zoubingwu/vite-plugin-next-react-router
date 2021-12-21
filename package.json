@@ -23,7 +23,7 @@
     "fast-glob": "^3.2.7"
   },
   "peerDependencies": {
-    "react-router-dom": ">=16",
+    "react-router-dom": ">=6",
     "vite": ">=2"
   },
   "devDependencies": {
