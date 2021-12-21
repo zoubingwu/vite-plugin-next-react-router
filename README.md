@@ -50,13 +50,14 @@ export default defineConfig({
 });
 ```
 
-3. This plugin then will generate a route objects for you, you can import it from the virtual module named `virtual:next-react-router`, and use it with the `useRoutes` hook that react-router provides.
+3. To use auto generated route objects, it provides two hooks from the virtual module named `virtual:next-react-router`: `usePages` and `usePageRoutes`. You can use it with the react-router's `useRoutes`.
 
 ```js
 import { BrowserRouter, useRoutes } from 'react-router-dom';
-import { routes } from 'virtual:next-react-router';
+import { usePagesRoute } from 'virtual:next-react-router';
 
 function App() {
+  const routes = usePagesRoute();
   const element = useRoutes(routes);
   return element;
 }
@@ -67,6 +68,33 @@ ReactDOM.render(
   </BrowserRouter>,
   document.getElementById('root')
 );
+```
+
+4. For some meta info you want to add to the route page, you can export a `meta` object in you page component, and read them from `usePages` hook like below:
+
+```js
+// page component
+export default PageA() {
+  //...
+}
+
+export const meta = {
+  title: 'This is Page A',
+  sort: 0
+}
+
+
+// Sider component
+import { usePages } from 'virtual:next-react-router';
+
+function Sider() {
+  const pages = usePages();  // returns Array<{ route: string, meta?: any }>
+
+  const menuItems = pages.sort(/* sort it according to meta.sort */).map(/* map them to Sider menu items */)
+
+  // render it
+}
+
 ```
 
 It follows Next.js style file system based routing rules and route files named `index` to the root of the pages directory. You can check their docs [here](https://nextjs.org/docs/routing/introduction).
