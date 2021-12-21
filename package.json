@@ -1,6 +1,6 @@
 {
   "name": "vite-plugin-next-react-router",
-  "version": "0.4.2",
+  "version": "0.5.0",
   "main": "dist/index.js",
   "module": "./dist/index.mjs",
   "exports": {
@@ -14,7 +14,7 @@
     "build": "tsup",
     "watch": "tsup --watch",
     "fmt": "prettier src/ --write",
-    "example:dev": "npm --prefix examples/react run dev",
+    "example:dev": "npm --prefix examples/react run start",
     "test": "jest",
     "test:watch": "jest --watch"
   },
@@ -23,7 +23,7 @@
     "fast-glob": "^3.2.7"
   },
   "peerDependencies": {
-    "react-router-dom": ">=6",
+    "react-router-dom": ">=16",
     "vite": ">=2"
   },
   "devDependencies": {
