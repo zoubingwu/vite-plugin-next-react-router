@@ -19,7 +19,7 @@ or with pnpm
 pnpm add vite-plugin-next-react-router -D
 ```
 
-2. Add to your `vite.config.js`
+1. Add to your `vite.config.js`
 
 ```js
 import { reactRouterPlugin } from 'vite-plugin-next-react-router';
@@ -45,19 +45,19 @@ export default defineConfig({
       async: true,
       pageDir: 'src/pages',
       extensions: ['js', 'jsx', 'ts', 'tsx'],
+      output: './src/routes.tsx',
     }),
   ],
 });
 ```
 
-3. To use auto generated route objects, it provides two hooks from the virtual module named `virtual:next-react-router`: `usePages` and `usePageRoutes`. You can use it with the react-router's `useRoutes`.
+1. This plugin will scan you pages folder then automatically generate a routes objects and write to output so you can import them from there.
 
 ```js
 import { BrowserRouter, useRoutes } from 'react-router-dom';
-import { usePagesRoute } from 'virtual:next-react-router';
+import { routes } from './routes'; // or use Vite's alias to simplify import path for nested components
 
 function App() {
-  const routes = usePagesRoute();
   const element = useRoutes(routes);
   return element;
 }
@@ -70,7 +70,7 @@ ReactDOM.render(
 );
 ```
 
-4. For some meta info you want to add to the route page, you can export a `meta` object in you page component, and read them from `usePages` hook like below:
+1. For some meta info you want to add to the pages, you can export a `meta` object in you page component, and read them from `pages` objects like below:
 
 ```js
 // page component
@@ -85,12 +85,12 @@ export const meta = {
 
 
 // Sider component
-import { usePages } from 'virtual:next-react-router';
+import { pages } from './routes';
 
 function Sider() {
-  const pages = usePages();  // returns Array<{ route: string, meta?: any }>
-
-  const menuItems = pages.sort(/* sort it according to meta.sort */).map(/* map them to Sider menu items */)
+  const menuItems = pages
+    .sort(/* sort it according to meta.sort */)\
+    .map(/* map them to Sider menu items */)
 
   // render it
 }
