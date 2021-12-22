@@ -16,6 +16,7 @@ test('resolver:resolveOptions', () => {
     extensions: ['tsx', 'ts', 'jsx', 'js'],
     pageDir,
     root: process.cwd(),
+    output: path.join(process.cwd(), 'src', 'routes.tsx'),
   });
 });
 
