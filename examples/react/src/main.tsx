@@ -2,13 +2,11 @@ import React, { lazy, Suspense } from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter, useRoutes } from 'react-router-dom';
 import './index.css';
-import { usePageRoutes, usePages } from 'virtual:next-react-router';
+
+import { routes, pages } from './routes';
 
 function App() {
-  const pages = usePages();
   console.log('pages: ', pages);
-
-  const routes = usePageRoutes();
   console.log('routes: ', routes);
   const element = useRoutes(routes);
   return element;

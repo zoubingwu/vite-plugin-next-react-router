@@ -1,5 +1,5 @@
 import { defineConfig } from 'vite';
-import reactRefresh from '@vitejs/plugin-react-refresh';
+import reactRefresh from '@vitejs/plugin-react';
 import { reactRouterPlugin } from 'vite-plugin-next-react-router';
 
 // https://vitejs.dev/config/
