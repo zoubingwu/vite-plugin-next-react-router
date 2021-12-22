@@ -1,7 +1,8 @@
 import fs from 'fs';
+import path from 'path';
 
 import { resolveGlobalLayout } from './resolver';
-import { generateAsyncCode, generateSyncCode } from './template';
+import { generateRoutesCode } from './template';
 import { ResolvedOptions, ResolvedRoute } from './types';
 
 export function generateComponentCall(
@@ -11,85 +12,130 @@ export function generateComponentCall(
   return `<${
     options.async
       ? `Dynamic${route.componentName}`
-      : `Static${route.componentName}.default`
+      : `Static${route.componentName}`
   } />`;
 }
 
-export function generate(
+function stripExt(p: string) {
+  return p.replace(path.extname(p), '');
+}
+
+export function transformToRelativePath(to: string, from: string) {
+  return './' + stripExt(path.relative(path.dirname(path.resolve(from)), to));
+}
+
+export const dynamicPageImports = (
   routes: ResolvedRoute[],
   options: ResolvedOptions
-): string {
+) =>
+  routes.reduce((acc, route) => {
+    return (
+      acc +
+      `const Dynamic${
+        route.componentName
+      } = React.lazy(() => import('${transformToRelativePath(
+        route.componentPath,
+        options.output
+      )}'));\n`
+    );
+  }, '');
+
+export const staticPageImports = (
+  routes: ResolvedRoute[],
+  options: ResolvedOptions
+) =>
+  routes.reduce((acc, route) => {
+    return (
+      acc +
+      `import Static${route.componentName} from '${transformToRelativePath(
+        route.componentPath,
+        options.output
+      )}'\n`
+    );
+  }, '');
+
+export const staticMetaImports = (
+  routes: ResolvedRoute[],
+  options: ResolvedOptions
+) => {
+  return routes.reduce((acc, route) => {
+    const routeComponentCode = fs.readFileSync(route.componentPath, 'utf8');
+    if (routeComponentCode.includes('export const meta')) {
+      return (
+        acc +
+        `import { meta as Static${
+          route.componentName
+        }Meta } from '${transformToRelativePath(
+          route.componentPath,
+          options.output ?? path.join(options.root, 'src', 'pages.ts')
+        )}'\n`
+      );
+    }
+
+    return acc;
+  }, '');
+};
+
+export const layoutImport = (options: ResolvedOptions) => {
   const layout = resolveGlobalLayout(options);
-  const layoutImport = layout
-    ? `import ${layout.componentName} from '${layout.componentPath}'`
+  let imports = '';
+  if (!layout) {
+    imports += `import { Outlet } from 'react-router-dom';`;
+  }
+  imports = layout
+    ? `import ${layout.componentName} from '${transformToRelativePath(
+        layout.componentPath,
+        options.output
+      )}'`
     : '';
-  const routesCode = routes
+  const element = `<${layout ? layout.componentName : 'Outlet'} />`;
+
+  return { imports, element };
+};
+
+export const routeObjects = (
+  routes: ResolvedRoute[],
+  options: ResolvedOptions
+) =>
+  routes
     .map(route => {
       return `{ path: '${route.path}', element: ${generateComponentCall(
         route,
         options
-      )}, ${route.index ? 'index: true' : ''}},`;
+      )}, ${route.index ? 'index: true' : ''}},\n`;
     })
-    .join('\n');
+    .join(' '.repeat(6))
+    .trim();
 
-  if (options.async) {
-    const layoutElement = `<${
-      layout ? layout.componentName : 'DefaultLayout'
-    } />`;
-    const dynamicPageImports = routes.reduce((acc, route) => {
-      return (
-        acc +
-        `const Dynamic${route.componentName} = React.lazy(() => import('${route.componentPath}'));\n`
-      );
-    }, '');
-    const dynamicImports = routes.reduce((acc, route) => {
-      return acc + `import('${route.componentPath}'),\n`;
-    }, '');
-    const pages = routes
-      .filter(r => r.path !== '*')
-      .map((route, i) => {
-        const routeComponentCode = fs.readFileSync(route.componentPath, 'utf8');
-        if (routeComponentCode.includes('export const meta')) {
-          return `{ route: '${route.path}', meta: res[${i}].meta },`;
-        }
-        return `{ route: '${route.path}' },`;
-      })
-      .join('\n');
+export const pageObjects = (routes: ResolvedRoute[]) =>
+  routes
+    .filter(r => r.path !== '*')
+    .map(route => {
+      const routeComponentCode = fs.readFileSync(route.componentPath, 'utf8');
+      if (routeComponentCode.includes('export const meta')) {
+        return `{ route: '${route.path}', meta: Static${route.componentName}Meta },\n`;
+      }
+      return `{ route: '${route.path}' },\n`;
+    })
+    .join(' '.repeat(2))
+    .trim();
 
-    return generateAsyncCode({
-      layoutImport,
-      dynamicPageImports,
-      layoutElement,
-      routes: routesCode,
-      dynamicImports,
-      pages,
-    });
-  } else {
-    const layoutElement = `<${layout ? layout.componentName : 'Outlet'} />`;
+export function generateRoutesModuleCode(
+  routes: ResolvedRoute[],
+  options: ResolvedOptions
+) {
+  const { imports, element } = layoutImport(options);
+  const staticPageMetaImports = staticMetaImports(routes, options);
+  const pages = pageObjects(routes);
 
-    return generateSyncCode({
-      layoutImport,
-      layoutElement,
-      staticPageImports: routes.reduce((acc, route) => {
-        return (
-          acc +
-          `import * as Static${route.componentName} from '${route.componentPath}'\n`
-        );
-      }, ''),
-      routes: routesCode,
-      pages: routes
-        .filter(r => r.path !== '*')
-        .map(route => {
-          const routeComponentCode = fs.readFileSync(
-            route.componentPath,
-            'utf8'
-          );
-          if (routeComponentCode.includes('export const meta')) {
-            return `{ route: '${route.path}', meta: Static${route.componentName}.meta },`;
-          }
-          return `{ route: '${route.path}' },`;
-        })
-        .join('\n'),
-    });
-  }
+  return generateRoutesCode({
+    layoutImport: imports,
+    pageImports: options.async
+      ? dynamicPageImports(routes, options)
+      : staticPageImports(routes, options),
+    layoutElement: element,
+    routes: routeObjects(routes, options),
+    pages,
+    staticPageMetaImports,
+  });
 }

@@ -1,9 +1,8 @@
 import path from 'path';
+import fs from 'fs';
+import { ViteDevServer } from 'vite';
+import { generateRoutesModuleCode } from './codegen';
 
-import { transformWithEsbuild, ViteDevServer } from 'vite';
-import { generate } from './codegen';
-
-import { MODULE_ID_VIRTUAL } from './const';
 import { resolveOptions, resolvePages, resolveRoutes } from './resolver';
 import { UserOptions, ResolvedOptions, ResolvedPages } from './types';
 import { debug } from './utils';
@@ -42,49 +41,30 @@ export class Context {
   public configureServer(server: ViteDevServer) {
     this._server = server;
     this._server.watcher.on('unlink', filaPath =>
-      this.invalidateVirtualModule(filaPath)
+      this.invalidateAndRegenerateRoutes(filaPath)
     );
     this._server.watcher.on('add', filaPath =>
-      this.invalidateVirtualModule(filaPath)
+      this.invalidateAndRegenerateRoutes(filaPath)
     );
   }
 
-  public invalidateVirtualModule(filaPath: string) {
+  public invalidateAndRegenerateRoutes(filaPath: string) {
     if (!isTarget(filaPath, this._resolvedOptions!)) {
       return;
     }
 
     this._pages.clear();
-    const module = this._server!.moduleGraph.getModuleById(MODULE_ID_VIRTUAL);
-    if (module) {
-      this._server!.moduleGraph.invalidateModule(module);
-    }
+    this.generateRoutesModuleCode();
   }
 
-  public async generateVirtualModuleCode() {
-    debug(
-      'generating virtual module code...',
-      this._pages,
-      this._resolvedOptions
-    );
+  public generateRoutesModuleCode() {
     if (this._pages.size === 0) {
       this.search();
     }
     const routes = resolveRoutes(this._pages, this._resolvedOptions!);
-    debug('routes: ', routes);
+    const code = generateRoutesModuleCode(routes, this._resolvedOptions!);
+    debug('generateVirtualRoutesCode: \n', code);
 
-    const code = generate(routes, this._resolvedOptions!);
-    debug('virtual module code: ', code);
-
-    const { code: virtualModuleCode } = await transformWithEsbuild(
-      generate(routes, this._resolvedOptions!),
-      'routes.jsx',
-      {
-        jsx: 'transform',
-        loader: 'jsx',
-      }
-    );
-
-    return virtualModuleCode;
+    fs.writeFileSync(this._resolvedOptions!.output, code);
   }
 }

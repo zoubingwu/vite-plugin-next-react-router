@@ -21,11 +21,13 @@ export function resolveOptions(
   userOptions?: UserOptions,
   viteRoot?: string
 ): ResolvedOptions {
+  const root = viteRoot ?? normalizePath(process.cwd());
   return {
-    root: viteRoot ?? normalizePath(process.cwd()),
+    root,
     async: userOptions?.async ?? true,
     pageDir: userOptions?.pageDir ?? DEFAULT_PAGE_DIR,
     extensions: userOptions?.extensions ?? DEFAULT_EXT,
+    output: userOptions?.output ?? path.join(root, 'src', 'routes.tsx'),
   };
 }
 

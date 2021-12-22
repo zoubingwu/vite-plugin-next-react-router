@@ -23,6 +23,12 @@ export interface Options {
    * @default ['js', 'jsx', 'ts', 'tsx']
    */
   extensions: string[];
+
+  /**
+   * Generated routes code output
+   * @default './src/routes.tsx
+   */
+  output?: string;
 }
 
 export type UserOptions = Partial<Options>;
@@ -32,6 +38,8 @@ export interface ResolvedOptions extends Options {
    * Resolves to the `root` value from Vite config.
    */
   root: string;
+
+  output: string;
 }
 
 type PageRoute = string;

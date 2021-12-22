@@ -1,5 +1,3 @@
-export const MODULE_ID_VIRTUAL = 'virtual:next-react-router';
-
 export const MATCH_ALL_ROUTE = '*';
 
 export const DEFAULT_EXT = ['tsx', 'ts', 'jsx', 'js'];
