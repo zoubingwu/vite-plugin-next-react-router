@@ -49,6 +49,14 @@
     "typescript": "^4.4.4",
     "vite": "^2.6.13"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zoubingwu/vite-plugin-next-react-router.git"
+  },
+  "bugs": {
+    "url": "https://github.com/zoubingwu/vite-plugin-next-react-router/issues"
+  },
+  "homepage": "https://github.com/zoubingwu/vite-plugin-next-react-router",
   "sideEffect": false,
   "files": [
     "dist",
