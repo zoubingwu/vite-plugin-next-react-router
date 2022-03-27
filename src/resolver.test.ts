@@ -1,4 +1,5 @@
 import path from 'path';
+import os from  'os';
 import { resolveOptions, resolvePages, resolveRoutes, scan } from './resolver';
 import { ResolvedOptions } from './types';
 
@@ -15,7 +16,7 @@ test('resolver:resolveOptions', () => {
     async: true,
     extensions: ['tsx', 'ts', 'jsx', 'js'],
     pageDir,
-    root: process.cwd(),
+    root: os.platform()!=='win32'? process.cwd():process.cwd().replace(/\\/g, '/'),
     output: path.join(process.cwd(), 'src', 'routes.tsx'),
   });
 });
