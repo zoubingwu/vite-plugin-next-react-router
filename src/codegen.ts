@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import os from 'os';
 
 import { resolveGlobalLayout } from './resolver';
 import { generateRoutesCode } from './template';
@@ -21,6 +22,9 @@ function stripExt(p: string) {
 }
 
 export function transformToRelativePath(to: string, from: string) {
+  if(os.platform()==='win32'){
+    return './' + stripExt(path.relative(path.dirname(path.resolve(from)), to)).replace(/\\/g, '/')
+  }
   return './' + stripExt(path.relative(path.dirname(path.resolve(from)), to));
 }
 

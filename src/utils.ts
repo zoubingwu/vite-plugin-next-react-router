@@ -1,5 +1,6 @@
 import path from 'path';
 import consola from 'consola';
+import os from 'os';
 import { upperFirst, camelCase } from 'lodash';
 
 import { name } from '../package.json';
@@ -49,14 +50,25 @@ export function normalizeDirPathToRoute(dirPath: string) {
     .join('/');
 }
 
+function stripTrailingSlash(str: string) {
+  const asdf = str.substring(str.length - 1);
+  if (str.substring(str.length - 1) === '/' && str !== '/' && str !== './') {
+    return str.substring(0, str.length - 1);
+  }
+  return str;
+}
+
 export function normalizePathToRoute(p: string) {
   const { dir, name } = path.parse(p);
   const route = normalizeFilenameToRoute(name);
   if (route === MATCH_ALL_ROUTE) {
     return route;
   }
-
-  return path.resolve(path.join('/', normalizeDirPathToRoute(dir), route));
+  return os.platform() === 'win32'
+    ? stripTrailingSlash(
+        path.join('/', normalizeDirPathToRoute(dir), route).replace(/\\/g, '/')
+      )
+    : path.resolve(path.join('/', normalizeDirPathToRoute(dir), route));
 }
 
 export function countLength(p: string) {
@@ -78,7 +90,7 @@ export function sortRoutes(routes: string[]) {
 }
 
 export function getComponentName(filePath: string) {
-  const segments = filePath.split(path.sep);
+  const segments = filePath.split(/[\\\/]/);
   const extname = path.extname(filePath);
   const fileName = path.basename(filePath, extname);
 
