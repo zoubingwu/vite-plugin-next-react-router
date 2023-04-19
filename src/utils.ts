@@ -1,9 +1,7 @@
 import path from 'path';
 import consola from 'consola';
-import { upperFirst, camelCase } from 'lodash';
-
+import { upperFirst, camelCase } from 'lodash-es';
 import { name } from '../package.json';
-
 import { MATCH_ALL_ROUTE } from './const';
 
 export const debug = (message: any, ...args: any[]) => {

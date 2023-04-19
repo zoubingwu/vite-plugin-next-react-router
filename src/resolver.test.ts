@@ -1,4 +1,5 @@
 import path from 'path';
+import { test, expect, beforeEach } from 'vitest';
 import { resolveOptions, resolvePages, resolveRoutes, scan } from './resolver';
 import { ResolvedOptions } from './types';
 
