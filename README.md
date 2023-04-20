@@ -1,25 +1,30 @@
 # vite-plugin-next-react-router
 
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/zoubingwu/vite-plugin-next-react-router/Test)
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/zoubingwu/vite-plugin-next-react-router/test.yaml)
 ![npm](https://img.shields.io/npm/v/vite-plugin-next-react-router)
 
 A Next.js style file system based routing plugin for vite, inspired by [vite-plugin-pages](https://github.com/hannoeru/vite-plugin-pages). **Requires react-router v6.**
 
-## Usage
-
-1. Install with yarn:
+## Install
 
 ```sh
+# with npm
+npm install vite-plugin-next-react-router -D
+```
+
+```sh
+# with yarn
 yarn add vite-plugin-next-react-router -D
 ```
 
-or with pnpm
-
 ```sh
+# with pnpm
 pnpm add vite-plugin-next-react-router -D
 ```
 
-1. Add to your `vite.config.js`
+## Usage
+
+Add plugin to your `vite.config.js`
 
 ```js
 import { reactRouterPlugin } from 'vite-plugin-next-react-router';
@@ -33,68 +38,23 @@ export default defineConfig({
 });
 ```
 
-Pass config options like this:
+Config options like this, this is also the default config below:
 
 ```js
 export default defineConfig({
   plugins: [
-    //...
-
-    // this is also the default config
     reactRouterPlugin({
-      async: true,
       pageDir: 'src/pages',
       extensions: ['js', 'jsx', 'ts', 'tsx'],
-      output: './src/routes.tsx',
+      // like '_app' in Next.js, `_document` is not supported since all rendering is done in client side
+      layout: '_layout',
     }),
   ],
 });
 ```
 
-1. This plugin will scan you pages folder then automatically generate a routes objects and write to output so you can import them from there.
+This plugin will scan you pages folder then automatically inject code to the index html, you don't have to write any other code for initial rendering, just like Next.js.
 
-```js
-import { BrowserRouter, useRoutes } from 'react-router-dom';
-import { routes } from './routes'; // or use Vite's alias to simplify import path for nested components
+It follows most of the Next.js style file system based routing rules and route files named `index` to the root of the pages directory. You can check their docs [here](https://nextjs.org/docs/routing/introduction).
 
-function App() {
-  const element = useRoutes(routes);
-  return element;
-}
-
-ReactDOM.render(
-  <BrowserRouter>
-    <App />
-  </BrowserRouter>,
-  document.getElementById('root')
-);
-```
-
-1. For some meta info you want to add to the pages, you can export a `meta` object in you page component, and read them from `pages` objects like below:
-
-```js
-// page component
-export default PageA() {
-  //...
-}
-
-export const meta = {
-  title: 'This is Page A',
-  sort: 0
-}
-
-
-// Sider component
-import { pages } from './routes';
-
-function Sider() {
-  const menuItems = pages
-    .sort(/* sort it according to meta.sort */)\
-    .map(/* map them to Sider menu items */)
-
-  // render it
-}
-
-```
-
-It follows Next.js style file system based routing rules and route files named `index` to the root of the pages directory. You can check their docs [here](https://nextjs.org/docs/routing/introduction).
+If you found any inconsistency with Next.js, please open an issue.
