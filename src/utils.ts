@@ -18,10 +18,8 @@ export function isDynamic(filename: string) {
   return /^\[(.+)\]$/.test(filename);
 }
 
-export function isDynamicRoute(route: string) {
-  return (
-    route === MATCH_ALL_ROUTE || route.split('/').some(s => s.startsWith(':'))
-  );
+export function isIndexPage(filename: string) {
+  return filename === 'index';
 }
 
 export function normalizeFilenameToRoute(filename: string) {
@@ -29,7 +27,7 @@ export function normalizeFilenameToRoute(filename: string) {
     return MATCH_ALL_ROUTE;
   }
 
-  if (filename === 'index') {
+  if (isIndexPage(filename)) {
     return '/';
   }
 
@@ -91,4 +89,8 @@ export function getComponentName(filePath: string) {
   }, '');
 
   return name;
+}
+
+export function stripExt(p: string) {
+  return p.replace(path.extname(p), '');
 }

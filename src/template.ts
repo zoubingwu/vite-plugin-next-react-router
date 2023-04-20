@@ -1,27 +1,12 @@
-export const generateRoutesCode = ({
-  layoutImport,
-  pageImports,
-  layoutElement,
-  routes,
-  staticPageMetaImports,
-  pages,
-}: any) => `
+export const generateRoutesCode = ({ layoutImport, routes }: any) => `
 import React from 'react';
+import { createRoot } from "react-dom/client";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 ${layoutImport}
-${staticPageMetaImports}
-${pageImports}
 
-export const routes = [
-  {
-    path: '/',
-    element: ${layoutElement},
-    children: [
-      ${routes}
-    ]
-  }
-]
+const router = createBrowserRouter([${routes}])
 
-export const pages = [
-  ${pages}
-]
+createRoot(document.getElementById("root")).render(
+  <RouterProvider router={router} />
+);
 `;

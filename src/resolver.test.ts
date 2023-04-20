@@ -1,4 +1,3 @@
-import path from 'path';
 import { test, expect, beforeEach } from 'vitest';
 import { resolveOptions, resolvePages, resolveRoutes, scan } from './resolver';
 import { ResolvedOptions } from './types';
@@ -17,23 +16,19 @@ test('resolver:resolveOptions', () => {
     extensions: ['tsx', 'ts', 'jsx', 'js'],
     pageDir,
     root: process.cwd(),
-    output: path.join(process.cwd(), 'src', 'routes.tsx'),
+    layout: '_layout',
   });
 });
 
 test('resolver:scan', () => {
-  const files = scan(options.pageDir, options.extensions, options.root);
-  // console.log('files: ', files);
+  const files = scan(options);
 
   expect(Array.isArray(files)).toBe(true);
-  expect(files.includes('_layout.tsx')).toBe(false);
-  expect(files.some(f => path.basename(f).startsWith('_'))).toBe(false);
+  expect(files.length).toBe(9);
 });
 
 test('resolver:resolvePages', () => {
   const pages = resolvePages(options);
-  // console.log('pages: ', pages);
-
   expect(pages.size).toBe(9);
   expect(pages.has('*')).toBe(true);
   expect(pages.has('/')).toBe(true);
@@ -48,7 +43,5 @@ test('resolver:resolvePages', () => {
 test('resolver:resolveRoutes', () => {
   const pages = resolvePages(options);
   const routes = resolveRoutes(pages, options);
-  // console.log('routes: ', routes);
-
   expect(routes.length).toBe(9);
 });

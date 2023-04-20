@@ -1,7 +1,6 @@
 import path from 'path';
 import { normalizePath } from 'vite';
 import fg from 'fast-glob';
-
 import type {
   ResolvedOptions,
   ResolvedPages,
@@ -11,9 +10,13 @@ import type {
 import { getComponentName, normalizePathToRoute, sortRoutes } from './utils';
 import { DEFAULT_EXT, DEFAULT_PAGE_DIR } from './const';
 
+export function resolveLayoutFile(options: ResolvedOptions) {
+  const layout = options.layout ? options.layout : '_';
+  return `${layout}.{${options.extensions.join()}}`;
+}
+
 export function resolvePages(options: ResolvedOptions) {
-  const { root, pageDir, extensions } = options;
-  const files = scan(pageDir, extensions, root);
+  const files = scan(options);
   return fileToRouteMap(files);
 }
 
@@ -24,19 +27,22 @@ export function resolveOptions(
   const root = viteRoot ?? normalizePath(process.cwd());
   return {
     root,
-    async: userOptions?.async ?? true,
     pageDir: userOptions?.pageDir ?? DEFAULT_PAGE_DIR,
     extensions: userOptions?.extensions ?? DEFAULT_EXT,
-    output: userOptions?.output ?? path.join(root, 'src', 'routes.tsx'),
+    layout: userOptions?.layout ?? '_layout',
   };
 }
 
-export function scan(targetDir: string, extensions: string[], root: string) {
+export function scan(options: ResolvedOptions) {
+  const { root, extensions, pageDir: targetDir } = options;
   const fullPathOfTargetDir = path.resolve(root, targetDir);
-  return fg.sync([`**/*.{${extensions.join()}}`, `!_layout.*`], {
-    onlyFiles: true,
-    cwd: fullPathOfTargetDir,
-  });
+  return fg.sync(
+    [`**/*.{${extensions.join()}}`, `!${resolveLayoutFile(options)}`],
+    {
+      onlyFiles: true,
+      cwd: fullPathOfTargetDir,
+    }
+  );
 }
 
 export function fileToRouteMap(files: string[]): ResolvedPages {
@@ -60,9 +66,9 @@ export function resolveRoutes(
     const absolutePath = path.resolve(options.pageDir, filePath);
 
     const routeObj: ResolvedRoute = {
-      path: route,
-      componentPath: absolutePath,
-      componentName: getComponentName(filePath),
+      route: route,
+      path: absolutePath,
+      name: getComponentName(filePath),
     };
 
     if (path.basename(filePath, path.extname(filePath)) === 'index') {
@@ -76,20 +82,17 @@ export function resolveRoutes(
 export function resolveGlobalLayout(
   options: ResolvedOptions
 ): ResolvedRoute | null {
-  const globalLayoutFiles = fg.sync(
-    [`_layout.{${options.extensions.join()}}`],
-    {
-      onlyFiles: true,
-      cwd: options.pageDir,
-    }
-  );
+  const globalLayoutFiles = fg.sync(resolveLayoutFile(options), {
+    onlyFiles: true,
+    cwd: options.pageDir,
+  });
 
   if (globalLayoutFiles.length === 1) {
     const filePath = globalLayoutFiles[0];
     return {
-      componentPath: path.resolve(options.pageDir, globalLayoutFiles[0]),
-      componentName: 'GlobalLayout',
-      path: filePath,
+      path: path.resolve(options.pageDir, globalLayoutFiles[0]),
+      name: 'GlobalLayout',
+      route: filePath,
     };
   } else if (globalLayoutFiles.length > 1) {
     throw new Error('Multiple _layout files found');

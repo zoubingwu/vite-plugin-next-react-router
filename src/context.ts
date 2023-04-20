@@ -1,7 +1,6 @@
 import path from 'path';
-import fs from 'fs';
 import { ViteDevServer } from 'vite';
-import { generateRoutesModuleCode } from './codegen';
+import { codegen } from './codegen';
 
 import { resolveOptions, resolvePages, resolveRoutes } from './resolver';
 import { UserOptions, ResolvedOptions, ResolvedPages } from './types';
@@ -28,6 +27,7 @@ export class Context {
 
   public resolveOptions() {
     this._resolvedOptions = resolveOptions(this._userOptions, this.root);
+    return this._resolvedOptions;
   }
 
   public search() {
@@ -36,6 +36,8 @@ export class Context {
     }
     this._pages = resolvePages(this._resolvedOptions!);
     debug('pages: ', this._pages);
+
+    return this._pages;
   }
 
   public configureServer(server: ViteDevServer) {
@@ -59,12 +61,11 @@ export class Context {
 
   public generateRoutesModuleCode() {
     if (this._pages.size === 0) {
-      this.search();
+      return '';
     }
     const routes = resolveRoutes(this._pages, this._resolvedOptions!);
-    const code = generateRoutesModuleCode(routes, this._resolvedOptions!);
-    debug('generateVirtualRoutesCode: \n', code);
+    const code = codegen(routes, this._resolvedOptions!);
 
-    fs.writeFileSync(this._resolvedOptions!.output, code);
+    return code;
   }
 }

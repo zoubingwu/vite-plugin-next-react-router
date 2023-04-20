@@ -1,56 +1,71 @@
 import { test, expect } from 'vitest';
-import {
-  getComponentName,
-  isCatchAll,
-  isDynamic,
-  normalizeDirPathToRoute,
-  normalizeFilenameToRoute,
-  normalizePathToRoute,
-} from './utils';
+import * as utils from './utils';
 
 test('utils:isCatchAllRoute', () => {
-  expect(isCatchAll('')).toBe(false);
-  expect(isCatchAll('all')).toBe(false);
-  expect(isCatchAll('[.all]')).toBe(false);
-  expect(isCatchAll('[..all]')).toBe(false);
-  expect(isCatchAll('[...all]')).toBe(true);
+  expect(utils.isCatchAll('')).toBe(false);
+  expect(utils.isCatchAll('all')).toBe(false);
+  expect(utils.isCatchAll('[.all]')).toBe(false);
+  expect(utils.isCatchAll('[..all]')).toBe(false);
+  expect(utils.isCatchAll('[...all]')).toBe(true);
 });
 
 test('utils:isDynamicRoute', () => {
-  expect(isDynamic('')).toBe(false);
-  expect(isDynamic('topic')).toBe(false);
-  expect(isDynamic('[...all]')).toBe(true);
-  expect(isDynamic('[id]')).toBe(true);
+  expect(utils.isDynamic('')).toBe(false);
+  expect(utils.isDynamic('topic')).toBe(false);
+  expect(utils.isDynamic('[...all]')).toBe(true);
+  expect(utils.isDynamic('[id]')).toBe(true);
 });
 
 test('utils:normalizeFilenameToRoute', () => {
-  expect(normalizeFilenameToRoute('topic')).toBe('topic');
-  expect(normalizeFilenameToRoute('index')).toBe('/');
-  expect(normalizeFilenameToRoute('[id]')).toBe(':id');
-  expect(normalizeFilenameToRoute('[id]')).toBe(':id');
+  expect(utils.normalizeFilenameToRoute('topic')).toBe('topic');
+  expect(utils.normalizeFilenameToRoute('index')).toBe('/');
+  expect(utils.normalizeFilenameToRoute('[id]')).toBe(':id');
+  expect(utils.normalizeFilenameToRoute('[id]')).toBe(':id');
+});
+
+test('utils:parameterizeDynamicRoute', () => {
+  expect(utils.parameterizeDynamicRoute('[b]')).toBe(':b');
 });
 
 test('utils:normalizeDirPathToRoute', () => {
-  expect(normalizeDirPathToRoute('topic')).toBe('topic');
-  expect(normalizeDirPathToRoute('topic/[id]/content')).toBe(
+  expect(utils.normalizeDirPathToRoute('topic')).toBe('topic');
+  expect(utils.normalizeDirPathToRoute('topic/[id]/content')).toBe(
     'topic/:id/content'
   );
 });
 
 test('utils:normalizePathToRoute', () => {
-  expect(normalizePathToRoute('index.tsx')).toBe('/');
-  expect(normalizePathToRoute('index/index.tsx')).toBe('/index');
-  expect(normalizePathToRoute('index/topic.tsx')).toBe('/index/topic');
-  expect(normalizePathToRoute('index/topic/[id].tsx')).toBe('/index/topic/:id');
-  expect(normalizePathToRoute('/topic/component/index.tsx')).toBe(
+  expect(utils.normalizePathToRoute('index.tsx')).toBe('/');
+  expect(utils.normalizePathToRoute('index/index.tsx')).toBe('/index');
+  expect(utils.normalizePathToRoute('index/topic.tsx')).toBe('/index/topic');
+  expect(utils.normalizePathToRoute('index/topic/[id].tsx')).toBe(
+    '/index/topic/:id'
+  );
+  expect(utils.normalizePathToRoute('/topic/component/index.tsx')).toBe(
     '/topic/component'
   );
-  expect(normalizePathToRoute('/[id]/user.tsx')).toBe('/:id/user');
+  expect(utils.normalizePathToRoute('/[id]/user.tsx')).toBe('/:id/user');
+});
+
+test('utils:sortRoutes', () => {
+  expect(utils.sortRoutes(['/a', '/b', '/a/b', '/'])).toStrictEqual([
+    '/',
+    '/a',
+    '/b',
+    '/a/b',
+  ]);
 });
 
 test('utils:getComponentName', () => {
-  expect(getComponentName('settings/articles/index.tsx')).toBe(
+  expect(utils.getComponentName('settings/articles/index.tsx')).toBe(
     'SettingsArticlesIndex'
   );
-  expect(getComponentName('articles/[id].tsx')).toBe('ArticlesId');
+  expect(utils.getComponentName('articles/[id].tsx')).toBe('ArticlesId');
+});
+
+test('utils:removePathExtname', () => {
+  expect(utils.stripExt('/a/b.tsx')).toBe('/a/b');
+  expect(utils.stripExt('/a/b.js')).toBe('/a/b');
+  expect(utils.stripExt('/a/b')).toBe('/a/b');
+  expect(utils.stripExt('/a/')).toBe('/a/');
 });
