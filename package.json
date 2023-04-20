@@ -16,7 +16,8 @@
     "fmt": "prettier src/ --write",
     "example:dev": "npm --prefix examples/react run start",
     "test": "vitest run",
-    "test:watch": "vitest watch"
+    "test:watch": "vitest watch",
+    "prepare": "husky install"
   },
   "dependencies": {
     "consola": "^3.1.0",
