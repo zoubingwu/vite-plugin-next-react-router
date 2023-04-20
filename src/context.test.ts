@@ -21,6 +21,5 @@ test('context:resolveOptions', () => {
 test('context:search', () => {
   context.resolveOptions();
   const pages = context.search();
-  console.log('pages: ', pages);
   expect(pages.size).toBe(9);
 });
