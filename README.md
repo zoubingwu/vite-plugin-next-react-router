@@ -3,7 +3,7 @@
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/zoubingwu/vite-plugin-next-react-router/test.yaml)
 ![npm](https://img.shields.io/npm/v/vite-plugin-next-react-router)
 
-A Next.js style file system based routing plugin for vite, inspired by [vite-plugin-pages](https://github.com/hannoeru/vite-plugin-pages). **Requires react-router v6.**
+A Next.js style file system based routing plugin for vite, inspired by [vite-plugin-pages](https://github.com/hannoeru/vite-plugin-pages).
 
 ## Install
 
@@ -53,8 +53,8 @@ export default defineConfig({
 });
 ```
 
-This plugin will scan you pages folder then automatically inject code to the index html, you don't have to write any other code for initial rendering, just like Next.js.
+This plugin will scan your pages folder then automatically inject code to index html, you don't have to write any other code for initial rendering, just like Next.js. There is a example project under `/example/react` folder.
 
-It follows most of the Next.js style file system based routing rules and route files named `index` to the root of the pages directory. You can check their docs [here](https://nextjs.org/docs/routing/introduction).
+It follows most of the Next.js style file system based routing rules. You can check their docs [here](https://nextjs.org/docs/routing/introduction).
 
 If you found any inconsistency with Next.js, please open an issue.
