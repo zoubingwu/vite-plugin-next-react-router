@@ -5,13 +5,9 @@ import { stripExt } from './utils';
 
 export const layoutImport = (options: ResolvedOptions) => {
   const layout = resolveGlobalLayout(options);
-  let imports = '';
-  if (!layout) {
-    imports += `import { Outlet } from 'react-router-dom';`;
-  }
-  imports = layout
+  const imports = layout
     ? `import ${layout.name} from '${stripExt(layout.path)}'`
-    : '';
+    : `import { Outlet } from 'react-router-dom';`;
   const element = layout ? layout.name : 'Outlet';
 
   return { imports, element };

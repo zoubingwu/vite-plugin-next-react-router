@@ -1,13 +1,12 @@
 import type { Plugin } from 'vite';
 import { transformWithEsbuild } from 'vite';
 
-import { ResolvedOptions, UserOptions } from './types';
+import { UserOptions } from './types';
 import { Context } from './context';
 import { MODULE_ID_VIRTUAL } from './const';
 
 function withReactRouter(userOptions?: UserOptions): Plugin {
   const ctx: Context = new Context(userOptions);
-  let options: ResolvedOptions;
 
   return {
     name: 'vite-plugin-next-router',
@@ -17,7 +16,7 @@ function withReactRouter(userOptions?: UserOptions): Plugin {
     },
     async configResolved({ root }) {
       ctx.root = root;
-      options = ctx.resolveOptions();
+      ctx.resolveOptions();
       ctx.search();
     },
     resolveId(id) {
