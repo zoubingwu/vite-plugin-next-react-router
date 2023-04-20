@@ -1,7 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "start": "vite",
+    "start": "DEBUG=vite-plugin-next-react-router vite",
     "build": "vite build",
     "serve": "vite preview"
   },
@@ -15,6 +15,7 @@
     "@vitejs/plugin-react": "^3.1.0",
     "typescript": "^5.0.4",
     "vite": "^4.2.2",
+    "vite-plugin-inspect": "^0.7.23",
     "vite-plugin-next-react-router": "workspace:*"
   }
 }
