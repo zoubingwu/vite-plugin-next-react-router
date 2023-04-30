@@ -27,7 +27,7 @@ pnpm add vite-plugin-next-react-router -D
 Add plugin to your `vite.config.js`
 
 ```js
-import { reactRouterPlugin } from 'vite-plugin-next-react-router';
+import reactRouterPlugin from 'vite-plugin-next-react-router';
 
 // https://vitejs.dev/config/
 export default defineConfig({
